@@ -1,5 +1,6 @@
 const express = require('express')
 const { MongoClient } = require('mongodb')
+const ObjectId = require('mongodb').ObjectId
 require('dotenv').config()
 
 const cors = require('cors')
@@ -28,6 +29,13 @@ async function run() {
       const cursor = productCollection.find({})
       const products = await cursor.toArray()
       res.send(products)
+    })
+
+    // Post
+    app.post('/addProduct', (req, res) => {
+      productCollection.insertOne(req.body).then((result) => {
+        res.send(result.insertedId)
+      })
     })
   } finally {
     // await client.close()
