@@ -23,6 +23,9 @@ async function run() {
     await client.connect()
     const database = client.db('online_food_delivery')
     const productCollection = database.collection('products')
+    const orderCollection = client
+      .db('online_food_delivery')
+      .collection('orders')
 
     // GET Products API
     app.get('/products', async (req, res) => {
@@ -36,6 +39,22 @@ async function run() {
       productCollection.insertOne(req.body).then((result) => {
         res.send(result.insertedId)
       })
+    })
+
+    // Added Item
+    app.post('/addItem', (req, res) => {
+      console.log(req.body)
+      orderCollection.insertOne(req.body).then((result) => {
+        res.send(result)
+      })
+    })
+
+    app.get('/myOrders/:email', async (req, res) => {
+      // console.log(req.params.email)
+      const result = await orderCollection
+        .find({ email: req.params.email })
+        .toArray()
+      res.send(result)
     })
   } finally {
     // await client.close()
