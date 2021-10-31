@@ -26,6 +26,9 @@ async function run() {
     const orderCollection = client
       .db('online_food_delivery')
       .collection('orders')
+    const customerInformation = client
+      .db('online_food_delivery')
+      .collection('customer_information')
 
     // GET Products API
     app.get('/products', async (req, res) => {
@@ -49,11 +52,44 @@ async function run() {
       })
     })
 
+    // Order Review
     app.get('/myOrders/:email', async (req, res) => {
       // console.log(req.params.email)
       const result = await orderCollection
         .find({ email: req.params.email })
         .toArray()
+      res.send(result)
+    })
+
+    // Order delete
+    app.delete('/orders/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await orderCollection.deleteOne(query)
+      res.send(result)
+      console.log('Deleting with id', result)
+    })
+
+    // Get search
+    app.get('/searchEvent', async (req, res) => {
+      console.log(req.query)
+      const result = await productCollection
+        .find({
+          name: { $regex: req.query.search },
+        })
+        .toArray()
+      res.json(result)
+    })
+
+    // Place order or order review
+    app.post('/placeOrder', async (req, res) => {
+      console.log(req.body)
+      const result = await customerInformation.insertOne(req?.body)
+      res.json(result)
+    })
+
+    app.get('/manageAllOrders/', async (req, res) => {
+      const result = await customerInformation.find({}).toArray()
       res.send(result)
     })
   } finally {
