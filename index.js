@@ -46,7 +46,6 @@ async function run() {
 
     // Added Item
     app.post('/addItem', (req, res) => {
-      console.log(req.body)
       orderCollection.insertOne(req.body).then((result) => {
         res.send(result)
       })
@@ -54,7 +53,6 @@ async function run() {
 
     // Order Review
     app.get('/myOrders/:email', async (req, res) => {
-      // console.log(req.params.email)
       const result = await orderCollection
         .find({ email: req.params.email })
         .toArray()
@@ -67,12 +65,10 @@ async function run() {
       const query = { _id: ObjectId(id) }
       const result = await orderCollection.deleteOne(query)
       res.send(result)
-      console.log('Deleting with id', result)
     })
 
     // Get search
     app.get('/searchEvent', async (req, res) => {
-      console.log(req.query)
       const result = await productCollection
         .find({
           name: { $regex: req.query.search },
@@ -83,7 +79,6 @@ async function run() {
 
     // Place order or order review
     app.post('/placeOrder', async (req, res) => {
-      console.log(req.body)
       const result = await customerInformation.insertOne(req?.body)
       res.json(result)
     })
